@@ -25,6 +25,7 @@ app.set('view engine', 'hbs');
 
 //Chuyển hướng sang Router
 app.use('/', require('./routes/indexRouter'));
+app.use('/products', require('./routes/productsRouter'));
 
 app.use((req, res, next) => {
     res.status(404).render('error', { message: 'File not found!' });
