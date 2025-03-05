@@ -11,19 +11,31 @@ controller.showHomePage = async (req, res) => {
     const Product = models.Product;
 
     //thêm await trong hàm async(req,res) để xử lý csdl xong mới render ở dòng dưới
+    //featured products
     const featuredProducts = await Product.findAll({
+        attibutes: ['id', 'name', 'imagePath', 'stars', 'price', 'oldPrice', 'createdAt'],
+        order: [['createdAt', 'DESC']],
+        limit: 10
+    });
+
+    //recent products
+    const recentProducts = await Product.findAll({
         attibutes: ['id', 'name', 'imagePath', 'stars', 'price', 'oldPrice'],
         order: [['stars', 'DESC']],
         limit: 10
     });
-    const brands = await Brand.findAll();
-    const categories = await Category.findAll();
 
+    //brands
+    const brands = await Brand.findAll();
+
+    //categories
+    const categories = await Category.findAll();
     const secArray = categories.splice(2, 2);
     const thirdArray = categories.splice(1, 1);
     const categoriesArray = [categories, secArray, thirdArray];
 
-    res.render('index', { brands, categoriesArray, featuredProducts });
+    //Xử lý render
+    res.render('index', { brands, categoriesArray, featuredProducts, recentProducts });
 }
 
 controller.showPage = (req, res, next) => {
