@@ -117,11 +117,30 @@ controller.showDetails = async (req, res) => {
                 model: models.User,
                 attibutes: ['firstName', 'lastName']
             }]
+        }, {
+            model: models.Tag,
+            attibutes: ['id']
         }]
     });
 
-    res.render('product-detail', { product });
+    let tagIDs = [];
+    product.Tags.forEach(tag => {
+        tagIDs.push(tag.id);
+    });
 
+    let relatedProducts = await models.Product.findAll({
+        attibutes: ['id', 'name', 'imagePath', 'stars', 'price', 'oldPrice'],
+        include: [{
+            model: models.Tag,
+            attibutes: ['id'],
+            where: {
+                id: { [Op.in]: tagIDs }
+            }
+        }],
+        limit: 10
+    });
+
+    res.render('product-detail', { product, relatedProducts });
 }
 
 function removeParam(key, sourceURL) {
