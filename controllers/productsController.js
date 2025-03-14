@@ -2,6 +2,7 @@ const controller = {};
 const { where } = require('sequelize');
 const models = require('../models');
 const sequelize = require('sequelize');
+const { query } = require('express');
 const Op = sequelize.Op;
 
 controller.getData = async (req, res, next) => {
@@ -38,6 +39,8 @@ controller.show = async (req, res) => {
     let tagId = isNaN(req.query.tag) ? 0 : parseInt(req.query.tag);
     let keyword = req.query.keyword || '';
     let sort = ['price', 'newest', 'popular'].includes(req.query.sort) ? req.query.sort : 'price';
+    let page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
+
 
     //Lọc các sản phẩm theo brand hoặc category
     let options = {
@@ -61,7 +64,7 @@ controller.show = async (req, res) => {
             [Op.iLike]: `%${keyword}%`
         };
     }
-
+    //Sắp xếp sản phẩm theo ngày, giá, phổ biến
     switch (sort) {
         case 'newest':
             options.order = [['createdAt', 'DESC']];
@@ -81,10 +84,21 @@ controller.show = async (req, res) => {
         originalUrl = req.originalUrl + '?';
     }
 
-    let products = await models.Product.findAll(options);
+    //Phân trang sản phẩm
+    const limit = 6;
+    options.limit = limit;
+    options.offset = limit * (page - 1);
+    let { rows, count } = await models.Product.findAndCountAll(options);
+    let pagination = {
+        page: page,
+        limit: limit,
+        totalRows: count,
+        queryParams: req.query
+    };
+    let products = rows;
 
     //Render trang product-list theo bộ lọc
-    res.render('product-list', { products, originalUrl, sort });
+    res.render('product-list', { products, originalUrl, sort, pagination });
 }
 
 controller.showDetails = async (req, res) => {
