@@ -1,6 +1,8 @@
 const controller = {};
 const { where } = require('sequelize');
 const models = require('../models');
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 controller.getData = async (req, res, next) => {
     //Lấy các sản phẩm từ request theo category    
@@ -33,6 +35,7 @@ controller.show = async (req, res) => {
     let categoryId = isNaN(req.query.category) ? 0 : parseInt(req.query.category);
     let brandId = isNaN(req.query.brand) ? 0 : parseInt(req.query.brand);
     let tagId = isNaN(req.query.tag) ? 0 : parseInt(req.query.tag);
+    let keyword = req.query.keyword || '';
 
     //Lọc các sản phẩm theo brand hoặc category
     let options = {
@@ -50,6 +53,11 @@ controller.show = async (req, res) => {
             model: models.Tag,
             where: { id: tagId }
         }]
+    }
+    else if (keyword.trim() != '') {
+        options.where.name = {
+            [Op.iLike]: `%${keyword}%`
+        };
     }
     let products = await models.Product.findAll(options);
 
