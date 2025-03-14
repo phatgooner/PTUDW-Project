@@ -32,10 +32,12 @@ controller.getData = async (req, res, next) => {
 }
 
 controller.show = async (req, res) => {
+    // Lấy query
     let categoryId = isNaN(req.query.category) ? 0 : parseInt(req.query.category);
     let brandId = isNaN(req.query.brand) ? 0 : parseInt(req.query.brand);
     let tagId = isNaN(req.query.tag) ? 0 : parseInt(req.query.tag);
     let keyword = req.query.keyword || '';
+    let sort = ['price', 'newest', 'popular'].includes(req.query.sort) ? req.query.sort : 'price';
 
     //Lọc các sản phẩm theo brand hoặc category
     let options = {
@@ -59,10 +61,30 @@ controller.show = async (req, res) => {
             [Op.iLike]: `%${keyword}%`
         };
     }
+
+    switch (sort) {
+        case 'newest':
+            options.order = [['createdAt', 'DESC']];
+            break;
+        case 'popular':
+            options.order = [['stars', 'DESC']];
+            break;
+        default:
+            options.order = [['price', 'ASC']];
+    }
+
+    let originalUrl;
+    if (Object.keys(req.query).length > 0) {
+        originalUrl = removeParam('sort', req.originalUrl);
+    }
+    else {
+        originalUrl = req.originalUrl + '?';
+    }
+
     let products = await models.Product.findAll(options);
 
     //Render trang product-list theo bộ lọc
-    res.render('product-list', { products });
+    res.render('product-list', { products, originalUrl, sort });
 }
 
 controller.showDetails = async (req, res) => {
@@ -86,6 +108,24 @@ controller.showDetails = async (req, res) => {
 
     res.render('product-detail', { product });
 
+}
+
+function removeParam(key, sourceURL) {
+    var rtn = sourceURL.split("?")[0],
+        param,
+        params_arr = [],
+        queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+    if (queryString !== "") {
+        params_arr = queryString.split("&");
+        for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+            param = params_arr[i].split("=")[0];
+            if (param === key) {
+                params_arr.splice(i, 1);
+            }
+        }
+        if (params_arr.length) rtn = rtn + "?" + params_arr.join("&");
+    }
+    return rtn;
 }
 
 module.exports = controller;
