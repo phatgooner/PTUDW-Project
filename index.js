@@ -6,9 +6,34 @@ const port = process.env.PORT || 5000;
 const express_handlebars = require('express-handlebars');
 const { createStarList } = require('./controllers/handlebarsHelper');
 const { createPagination } = require('express-handlebars-paginate');
+const session = require('express-session');
 
 //Cấu hình public static folder
 app.use(express.static(__dirname + '/public'));
+
+//Cấu hình đọc dữ liệu post từ body
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+//Cấu hình session
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        maxAge: 20 * 60 * 1000 //20 phút
+    }
+}));
+
+//Middleware tạo giỏ hàng
+app.use((req, res, next) => {
+    let Cart = require('./controllers/cart');
+    req.session.cart = new Cart(req.session.cart ? req.session.cart : {});
+    res.locals.quantity = req.session.cart.quantity;
+
+    next();
+})
 
 //Cấu hình express handlebars
 app.engine('hbs', express_handlebars.engine({
