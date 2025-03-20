@@ -16,4 +16,7 @@ router.post('/cart', cartController.add);
 //PUT Method
 router.put('/cart', cartController.update);
 
+//DELETE Method
+router.delete('/cart', cartController.remove);
+router.delete('/cart/all', cartController.clear);
 module.exports = router;

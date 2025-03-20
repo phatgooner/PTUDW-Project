@@ -101,6 +101,7 @@ controller.show = async (req, res) => {
     res.render('product-list', { products, originalUrl, sort, pagination });
 }
 
+// Hiển thị chi tiết sản phẩm
 controller.showDetails = async (req, res) => {
     let id = isNaN(req.params.id) ? 0 : parseInt(req.params.id);
 

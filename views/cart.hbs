@@ -32,7 +32,7 @@
                         </thead>
                         <tbody class="align-middle">
                             {{#each items}}
-                            <tr>
+                            <tr id="product{{product.id}}">
                                 <td><a href="/products/{{product.id}}"><img src="{{product.imagePath}}"
                                             alt="{{product.name}}"></a></td>
                                 <td><a href="#">{{product.name}}</a></td>
@@ -49,7 +49,8 @@
                                     </div>
                                 </td>
                                 <td id="total{{product.id}}">${{total}}</td>
-                                <td><button><i class="fa fa-trash"></i></button></td>
+                                <td><button onclick="removeCart({{product.id}})"><i class="fa fa-trash"></i></button>
+                                </td>
                             </tr>
                             {{/each}}
                         </tbody>
@@ -73,7 +74,7 @@
                         <h4>Grand Total<span id="total">${{total}}</span></h4>
                     </div>
                     <div class="cart-btn">
-                        <button>Update Cart</button>
+                        <button onclick="clearCart()">Clear Cart</button>
                         <button>Checkout</button>
                     </div>
                 </div>
