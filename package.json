@@ -11,6 +11,7 @@
   "type": "commonjs",
   "description": "",
   "dependencies": {
+    "connect-redis": "^8.0.2",
     "express": "^4.21.2",
     "express-handlebars": "^8.0.1",
     "express-handlebars-paginate": "^1.0.3",
@@ -19,6 +20,7 @@
     "nodemon": "^3.1.9",
     "pg": "^8.13.3",
     "pg-hstore": "^2.3.4",
+    "redis": "^4.7.0",
     "sequelize": "^6.37.5"
   }
 }
