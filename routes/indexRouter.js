@@ -5,7 +5,7 @@ const router = express.Router();
 const controller = require('../controllers/indexControllers');
 
 // router.get('/createTable', (req, res) => {
-//     let models = require('./models');
+//     let models = require('../models');
 //     models.sequelize.sync().then(() => {
 //         res.send('Tables created!')
 //     })
