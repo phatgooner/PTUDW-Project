@@ -1,5 +1,7 @@
 'use strict';
 //Khai báo
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -10,8 +12,7 @@ const session = require('express-session');
 const { RedisStore } = require('connect-redis');
 const { createClient } = require('redis');
 const redisClient = createClient({
-    //url: 'rediss://red-cvl2l049c44c73f9ogi0:Jsl4U67dIxhWLobuq1F6huhzgOFux4Ke@singapore-keyvalue.render.com:6379'
-    url: 'redis://red-cvl2l049c44c73f9ogi0:6379'
+    url: process.env.REDIS_URL
 });
 redisClient.connect().catch(console.error);
 
@@ -24,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 
 //Cấu hình session
 app.use(session({
-    secret: 'secret',
+    secret: process.env.SESSION_SECRET,
     store: new RedisStore({ client: redisClient }),
     resave: false,
     saveUninitialized: false,
