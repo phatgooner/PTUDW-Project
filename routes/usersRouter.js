@@ -26,5 +26,7 @@ router.post('/placeorders',
         next();
     },
     controller.placeorders);
-
+router.get('/my-account', (req, res) => {
+    res.render('my-account');
+});
 module.exports = router;

@@ -15,6 +15,8 @@ const redisClient = createClient({
     url: process.env.REDIS_URL
 });
 redisClient.connect().catch(console.error);
+const passport = require('./controllers/passport');
+const flash = require('connect-flash');
 
 //Cấu hình public static folder
 app.use(express.static(__dirname + '/public'));
@@ -35,12 +37,19 @@ app.use(session({
     }
 }));
 
+//Cấu hình passport
+app.use(passport.initialize()); //Khởi tạo passport
+app.use(passport.session()); //Sử dụng session để lưu thông tin người dùng
+
+//Cấu hình sử dụng flash
+app.use(flash()); //Sử dụng flash để lưu thông tin thông báo
+
 //Middleware tạo giỏ hàng
 app.use((req, res, next) => {
     let Cart = require('./controllers/cart');
     req.session.cart = new Cart(req.session.cart ? req.session.cart : {});
     res.locals.quantity = req.session.cart.quantity;
-
+    res.locals.isLoggedIn = req.isAuthenticated(); //Kiểm tra người dùng đã đăng nhập hay chưa
     next();
 })
 
@@ -63,6 +72,7 @@ app.set('view engine', 'hbs');
 //Chuyển hướng sang Router
 app.use('/', require('./routes/indexRouter'));
 app.use('/products', require('./routes/productsRouter'));
+app.use('/users', require('./routes/authRouter'));
 app.use('/users', require('./routes/usersRouter'));
 
 
