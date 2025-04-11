@@ -7,6 +7,7 @@ controller.show = (req, res) => {
 
 controller.login = (req, res, next) => {
     let keepSignedIn = req.body.keepSignedIn;
+    let cart = req.session.cart; //Lưu giỏ hàng vào session
     passport.authenticate('local-login', (err, user) => {
         if (err) {
             return next(err); //Có lỗi xảy ra
@@ -19,9 +20,21 @@ controller.login = (req, res, next) => {
                 return next(err); //Có lỗi xảy ra
             }
             req.session.cookie.maxAge = keepSignedIn ? (24 * 60 * 60 * 1000) : null;
+            req.session.cart = cart; //Khôi phục giỏ hàng từ session
             return res.redirect('/users/my-account'); //Đăng nhập thành công
         });
     })(req, res, next);
+}
+
+controller.logout = (req, res, next) => {
+    let cart = req.session.cart; //Lưu giỏ hàng vào session
+    req.logout((err) => {
+        if (err) {
+            return next(err); //Có lỗi xảy ra
+        }
+        req.session.cart = cart; //Khôi phục giỏ hàng từ session
+        res.redirect('/'); //Đăng xuất thành công
+    });
 }
 
 module.exports = controller;
