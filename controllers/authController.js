@@ -5,7 +5,7 @@ controller.show = (req, res) => {
     if (req.isAuthenticated()) {
         return res.redirect('/'); //Người dùng đã đăng nhập
     }
-    res.render('login', { loginMessage: req.flash('loginMessage'), reqUrl: req.query.reqUrl });
+    res.render('login', { loginMessage: req.flash('loginMessage'), reqUrl: req.query.reqUrl, registerMessage: req.flash('registerMessage') });
 }
 
 controller.login = (req, res, next) => {
@@ -46,6 +46,26 @@ controller.isLoggedIn = (req, res, next) => {
         return next(); //Người dùng đã đăng nhập
     }
     res.redirect(`/users/login?reqUrl=${req.originalUrl}`); //Người dùng chưa đăng nhập
-}
+};
+
+controller.register = async (req, res, next) => {
+    let reqUrl = req.body.reqUrl ? req.body.reqUrl : '/users/my-account'; //Lấy URL yêu cầu từ form
+    let cart = req.session.cart; //Lưu giỏ hàng vào session
+    passport.authenticate('local-register', (err, user) => {
+        if (err) {
+            return next(err); //Có lỗi xảy ra
+        }
+        if (!user) {
+            return res.redirect(`/users/login?reqUrl=${reqUrl}`); //Đăng ký không thành công
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err); //Có lỗi xảy ra
+            }
+            req.session.cart = cart; //Khôi phục giỏ hàng từ session
+            return res.redirect(reqUrl); //Đăng ký thành công
+        });
+    })(req, res, next);
+};
 
 module.exports = controller;

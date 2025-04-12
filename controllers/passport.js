@@ -56,4 +56,38 @@ passport.use('local-login', new LocalStrategy({
     }
 }));
 
+passport.use('local-register', new LocalStrategy({
+    usernameField: 'email', //Tên đăng nhập là email
+    passwordField: 'password',
+    passReqToCallback: true, //Chuyển req vào callback
+}, async (req, email, password, done) => {
+    if (email) {
+        email = email.toLowerCase(); //Chuyển email về chữ thường
+    }
+    try {
+        if (!req.user) {
+            //Nếu chưa đăng nhập
+            let user = await models.User.findOne({
+                where: { email }
+            });
+            if (user) {
+                return done(null, false, req.flash('registerMessage', 'Email already exists!'));
+            }
+            user = await models.User.create({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: email,
+                mobile: req.body.mobile,
+                password: bcrypt.hashSync(password, bcrypt.genSaltSync(8)), //Mã hóa mật khẩu
+            });
+            done(null, false, req.flash('registerMessage', 'You have registered successfully. Please login!')); //Đăng ký thành công
+        }
+        //Bỏ qua đăng ký
+        done(null, req.user);
+    }
+    catch (err) {
+        done(err); //Có lỗi xảy ra
+    }
+}));
+
 module.exports = passport;

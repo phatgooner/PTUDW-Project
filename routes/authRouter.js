@@ -18,4 +18,6 @@ router.post('/login',
 
 router.get('/logout', controller.logout); // GET /users/logout
 
+router.post('/register', controller.register); // POST /users/register
+
 module.exports = router;
