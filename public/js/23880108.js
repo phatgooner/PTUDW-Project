@@ -94,3 +94,15 @@ async function placeorders(e) {
     }
     e.target.submit();
 }
+
+function checkPasswordConfirm(formId) {
+    let password = document.querySelector(`#${formId} [name=password]`);
+    let passwordConfirm = document.querySelector(`#${formId} [name=confirmPassword]`);
+    if (password.value != passwordConfirm.value) {
+        passwordConfirm.setCustomValidity('Passwords do not match');
+        passwordConfirm.reportValidity();
+    }
+    else {
+        passwordConfirm.setCustomValidity('');
+    }
+}
