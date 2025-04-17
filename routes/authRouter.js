@@ -41,4 +41,36 @@ router.post('/register',
     controller.register
 ); // POST /users/register
 
+router.get('/forgot', controller.showForgotPassword); // GET /users/forgot-password
+router.post('/forgot',
+    body('email').trim().notEmpty().withMessage('Email is required').isEmail().withMessage('Invalid email format'),
+    (req, res, next) => {
+        let message = getErrorMessage(req);
+        if (message) {
+            return res.render('forgot-password', { message });
+        }
+        next();
+    },
+    controller.forgotPassword); // POST /users/forgot-password
+
+router.get('/reset', controller.showResetPassword); // GET /users/reset/:token
+router.post('/reset',
+    body('email').trim().notEmpty().withMessage('Email is required').isEmail().withMessage('Invalid email format'),
+    body('password').trim().notEmpty().withMessage('Password is required'),
+    body('password').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/).withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+    body('confirmPassword').trim().notEmpty().withMessage('Confirm password is required').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Passwords do not match');
+        }
+        return true;
+    }),
+    (req, res, next) => {
+        let message = getErrorMessage(req);
+        if (message) {
+            return res.render('reset-password', { message });
+        }
+        next();
+    },
+    controller.resetPassword); // POST /users/reset/:token
+
 module.exports = router;

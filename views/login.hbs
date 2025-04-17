@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <button class="btn">Submit</button>
+                                <button class="btn">Login</button>
                             </div>
                             {{#if loginMessage}}
                             <div class="col-md-12">
@@ -54,6 +54,9 @@
                             </div>
                             {{/if}}
                             <input type="hidden" name="reqUrl" value="{{reqUrl}}">
+                            <div class="col-md-12 py-3">
+                                <a href="/users/forgot">Forgot Password</a>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -82,8 +85,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label>Mobile No</label>
-                                <input class="form-control" type="text" placeholder="Mobile No" name="mobileNo"
-                                    required>
+                                <input class="form-control" type="text" placeholder="Mobile No" name="mobile" required>
                             </div>
                             <div class="col-md-6">
                                 <label>Password</label>
